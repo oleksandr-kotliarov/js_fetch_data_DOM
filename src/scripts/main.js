@@ -16,7 +16,9 @@ const request = (url) => {
 };
 
 const getPhones = () => request('/phones.json');
-const getPhonesDetails = (arrId) => request(`/phones/${arrId}.json`);
+const getPhonesDetails = (arrId) => {
+  return Promise.all(arrId.map(id => request(`/phones/${id}.json`)));
+};
 
 const list = document.createElement('ul');
 
@@ -27,11 +29,13 @@ getPhones()
 
       return phone.id;
     });
+
     const details = [];
 
-    idList.forEach(element => {
-      getPhonesDetails(element).then(data => details.push(data));
-    });
+    getPhonesDetails(idList)
+      .then(data => {
+        Object.assign(details, data);
+      });
   });
 
 document.body.append(list);
